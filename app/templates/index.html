@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Go Search{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+
+        .top-search-bar {
+            margin-top: 1%;
+        }
+
+/*        #map{
+          height: 300px;
+          width: 600px;  
+        }*/
+
+        #map {
+            position: relative;
+            left: 15%;  
+            height: 300px;
+            width: 800px;
+        }
+
+    </style>
+{% endblock %}
+
+
+{% block body %}
+	{{ super() }}
+    <div id="page-wrapper">
+        <!-- /.col-lg-12 -->
+        <div class="row">
+            <div class="col-lg-12 top-search-bar">
+            <form class="form-inline" action="/query" method="get" id="user-search">
+                <div class="input-group custom-search-form col-lg-12">
+                    <select class="form-control lang-select" style="width:20%" 
+                    		name="lang-select" title="Results will be given preference in this language">
+                    	<option value="en">English</option>
+                    	<option value="es">Español (Spanish)</option>
+                    	<option value="pt">Português (Portuguese)</option>
+                    	<option value="fr">Français (French)</option>
+                    	<option value="ru">русский (Russian)</option>
+                    </select>
+                    <input style="float:left;width:80%" type="text" class="form-control search-bar" 
+                    		placeholder="Search..." name="usrquery">
+                    <span class="input-group-btn" style="vertical-align:top;">
+                        <button id="main-search-btn" class="btn btn-default" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </form>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7">
+
+                {% if image_list is defined and image_list %}
+                   <div class="panel panel-primary">
+                       <div class="panel-heading">
+                           Images
+                       </div>
+                       <section class="panel-body image-panel">
+                           <div></div>
+                           {% for image in image_list %}
+                               <img src={{image}} width="1">
+                           {% endfor %}
+                       </section>
+                   </div>
+                {% endif %}
+
+                
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <i class="fa fa-twitter"></i>  Tweets for the query
+                    </div>
+
+                    
+                    <div class="panel-body tweet-list" >
+                    <div id="page-nav"></div>
+                       <div class="qa-message-list" id="wallmessages" style="overflow:scroll;height:500px;">    
+                            
+                            {% for tweet in tweets %}       
+                            <div class="message-item paginate" data-lang="{{tweet.tweet_lang[0]}}">
+                                <div class="qa-message-content ">
+                                    {{tweet.html[0]|safe}}
+                                </div>
+                                <div class="qa-message-content">
+                                    <a href="/morelikethis?similar={{tweet.id}}"><button id="main-search-btn" class="btn btn-default" type="submit"> More Like this </button></a>
+                                </div>
+
+                            </div>
+                            {% endfor %} 
+
+                        </div> 
+                                
+                    </div>
+
+                </div>
+       
+            </div>
+   
+            <div class="col-lg-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Trending Tags
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="list-group trending-tags"><!-- Filled dynamically --></div>
+
+                    </div>
+
+                </div>
+            </div>
+            
+            {% if summary is defined and summary %}
+	            <div class="col-lg-5">
+	            	<div class="panel panel-default">
+	                    <div class="panel-heading">
+	                        Summary
+	                    </div>
+	                    <div class="panel-body">
+								{{summary}}
+							
+	                    </div>
+	                </div>
+				</div>
+			{% endif %}
+			
+            <div class="col-lg-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Tagging
+                    </div>
+                    <div id="query_tags" class="panel-body tag_style" style="overflow:auto;">
+                        {% if tags is not defined %}
+                            <span style="background-color:white;color:grey;font-size:90%;padding:0px;">Tags..</span>
+                        {% endif %}
+                        {% if tags is defined %}
+                            {% for tag in tags %}
+                                <span>{{tag}}</span>&nbsp;
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    
+                </div>
+            </div>
+            
+      	</div>
+           	
+    </div>
+    <!-- /#page-wrapper -->
+
+    <!-- Map -->
+    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" >
+          <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel"> Density Map </h4>
+          </div>
+          <div class="modal-body">
+             <div id="map" style="width: 300px; height: 400px"></div>
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-default" data-dismiss="modal">Close</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock body %}
